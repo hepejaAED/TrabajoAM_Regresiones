@@ -11,4 +11,45 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Ejercicio 1
 
+```{r}
+library(readxl)
+df <- read_excel("boston.xlsx")
+```
 
+## Apartado 1
+
+Se busca estudiar crim de manera lineal con la variable que tenga mayor relación lineal, para ello se va a estudiar la matriz de correlación eliminando la variable crim:
+
+
+```{r}
+cor_matrix <- cor(df$crim,df[,-which(names(df)=="crim")])
+cor_matrix
+```
+Se observa que la variable que tiene una mayor relación lineal es lstat por lo que se entrena el modelo con esta variable:
+
+## Apartado 2
+
+```{r}
+lm1<-lm(crim~lstat,data=df)
+summary(lm1)
+```
+Se observa que la variable lstat es estadísticamente significativa por lo que se puede rechazar la hipótesis nula de $\beta=0$ para esa variable. En cuanto al coeficiente de correlación es de 0.4085, explicando el $40\%$ de la dispersión de los datos.
+
+
+
+## Apartado 3
+
+El intervalo de confianza al $90\%$:
+```{r}
+confint(lm1,level=0.90)
+```
+
+
+```{r}
+lm1<-lm(crim~.-black-nox-age,data=df)
+summary(lm1)
+```
+
+Las variables que son estadísticamente significativas para explicar la variable crim son lstat, rm, ptratio, chas indus, medv y dis. Ordenados de más importantes a menos. El resto de variables quedan fuera por tener un p value superior a 0.05, afirmando la hipótesis nula de que el valor de $\beta$ asociado a esa variable vale 0.
+
+Con estos resultados se obtiene un coeficiente de correlación de 0.5987
