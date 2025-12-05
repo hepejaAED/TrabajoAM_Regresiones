@@ -1,0 +1,14 @@
+---
+title: "Modelos de regresión lineal simple y múltiple"
+author: "Javier Herrero Pérez"
+date: "2025-12-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ejercicio 1
+
+
