@@ -25,7 +25,16 @@ Se busca estudiar crim de manera lineal con la variable que tenga mayor relació
 cor_matrix <- cor(df$crim,df[,-which(names(df)=="crim")])
 cor_matrix
 ```
-Se observa que la variable que tiene una mayor relación lineal es lstat por lo que se entrena el modelo con esta variable:
+Se observa que la variable que tiene una mayor relación lineal en lstat por lo que se entrena el modelo con esta variable
+
+```{r}
+plot(df$lstat, df$crim,
+     main = "Diagrama de Dispersión: crim vs. lstat",
+     xlab = "lstat",
+     ylab = "crim",
+     pch = 19, col = "blue")
+```
+
 
 ## Apartado 2
 
@@ -33,21 +42,98 @@ Se observa que la variable que tiene una mayor relación lineal es lstat por lo 
 lm1<-lm(crim~lstat,data=df)
 summary(lm1)
 ```
-Se observa que la variable lstat es estadísticamente significativa por lo que se puede rechazar la hipótesis nula de $\beta=0$ para esa variable. En cuanto al coeficiente de correlación es de 0.4085, explicando el $40\%$ de la dispersión de los datos.
-
+Se observa que la variable lstat es estadísticamente significativa por lo que se puede rechazar la hipótesis nula de $\beta=0$ para esa variable. En cuanto al coeficiente de correlación es de 0.4085, explicando el $40\%$ de la dispersión de los datos. El p valor asociado a F-statistic es muy pequeño, confirmando que el modelo es globalmente significativo.
 
 
 ## Apartado 3
 
 El intervalo de confianza al $90\%$:
+
 ```{r}
 confint(lm1,level=0.90)
 ```
 
 
 ```{r}
-lm1<-lm(crim~.-black-nox-age,data=df)
+new_data <- data.frame(lstat = seq(min(df$lstat), max(df$lstat), length.out = 100))
+confidence_intervals <- predict(lm1, newdata = new_data, interval = "confidence", level = 0.9)
+```
+
+
+```{r}
+plot(df$lstat, df$crim,
+     main = "Regresión Simple: crim vs. lstat con Bandas de Confianza (90%)",
+     xlab = "lstat",
+     ylab = "crim", col = "darkgreen")
+abline(coef=coef(lm1), col='RED')
+lines(new_data$lstat, confidence_intervals[, "lwr"], col = "blue", lty = 2)
+lines(new_data$lstat, confidence_intervals[, "upr"], col = "blue", lty = 2) 
+legend("topright",
+       legend = c("Datos", "Recta de Regresión", "Banda de Confianza 90%"),
+       col = c("darkgreen", "red", "blue"),
+       pch = c(19, NA, NA),
+       lty = c(NA, 1, 2),
+       lwd = c(NA, 2, 1.5),
+       bty = "n")
+```
+
+
+## Apartado 4
+
+```{r}
+plot(lm1)
+```
+
+Tras los resultados obtenidos se puede concluir que los residuos son heterocedasticos, debido a que la dispersión de los residuos no es constante. En la figura de Residuals vs Fitted se aprecia como la línea roja que corresponde al valor medio no es constante si no que presenta un patrón curvo.
+
+
+Estos resultados justifican el hecho de hacer una transformación logaritmica. También se va a decidir eliminar unos valores outliers, lo que va a mejorar el valor de $R^2$ y el análisis:
+
+```{r}
+df <- read_excel("boston.xlsx")
+df<-df[-c(60,178,181),]
+df<-df[-c(173,177,127),]
+lm1<-lm(log(crim)~lstat,data=df)
 summary(lm1)
+```
+Se ha decidido aplicar el logaritmo únicamente a crim ya que si se aplicaba a ambos el valor de $R^2$ disminuía.
+
+
+```{r}
+new_data <- data.frame(lstat = seq(min(df$lstat), max(df$lstat), length.out = 100))
+confidence_intervals <- predict(lm1, newdata = new_data, interval = "confidence", level = 0.9)
+plot(df$lstat, log(df$crim),
+     main = "Diagrama de Dispersión: log(crim) vs. lstat",
+     xlab = "lstat",
+     ylab = "log(crim)",
+     pch = 19, col = "blue")
+abline(coef=coef(lm1), col='RED')
+lines(new_data$lstat, confidence_intervals[, "lwr"], col = "blue", lty = 2)
+lines(new_data$lstat, confidence_intervals[, "upr"], col = "blue", lty = 2) 
+legend("topright",
+       legend = c("Datos", "Recta de Regresión", "Banda de Confianza 90%"),
+       col = c("darkgreen", "red", "blue"),
+       pch = c(19, NA, NA),
+       lty = c(NA, 1, 2),
+       lwd = c(NA, 2, 1.5),
+       bty = "n")
+```
+
+
+```{r}
+plot(lm1)
+```
+
+
+Se observa un mejor ajuste tras la transformación y la eliminación de algunos valores. Ahora la media de los residuos se encuentara en torno al cero y el QQ Residuals presenta una tendencia más clara.
+
+
+# Apartado por si acaso
+
+
+```{r}
+# lm1<-lm(crim~.-black-nox-age,data=df)
+# summary(lm1)
 ```
 
 Las variables que son estadísticamente significativas para explicar la variable crim son lstat, rm, ptratio, chas indus, medv y dis. Ordenados de más importantes a menos. El resto de variables quedan fuera por tener un p value superior a 0.05, afirmando la hipótesis nula de que el valor de $\beta$ asociado a esa variable vale 0.
