@@ -128,12 +128,100 @@ plot(lm1)
 Se observa un mejor ajuste tras la transformación y la eliminación de algunos valores. Ahora la media de los residuos se encuentara en torno al cero y el QQ Residuals presenta una tendencia más clara.
 
 
+
+# Ejercicio 2
+
+## Punto 1
+
+```{r}
+df <- read_excel("boston.xlsx")
+lm2<-lm(crim~medv,data=df)
+```
+
+## Punto 2
+
+```{r}
+summary(lm2)
+```
+
+La variable medv es estadísticamente significativa para explicar la variable crim. Por otro lado el p-value de F-statistic es muy bajo por lo que se rechaza la hipótesis nula demostrando que el modelo es globalmente significativo. Este modelo es capaz de captar el $27,36\%$ de la varianza de los datos, aunque es un valor bajo más adelante se desarrollaran transformaciones que subiran este valor. La recta mínima de los cuadrados viene dada por $y=-0.255\beta_1 + 8.518$ por lo que a mayor sea el precio medio de la vivienda menor será la tasa de criminalidad.
+
+## Punto 3
+
+```{r}
+new_data<-data.frame(medv=seq(min(df$medv),max(df$medv),length.out=100))
+coefidence_intervals<-predict(lm2,newdata=new_data,interval = "confidence",level=0.9)
+
+plot(df$medv,df$crim,
+     main = "Diagrama de Dispersión: crim vs. medv",
+     xlab = "medv",
+     ylab = "crim",
+     pch = 19, col = "blue")
+abline(coef=coef(lm2), col='RED')
+lines(new_data$medv, coefidence_intervals[, "lwr"], col = "blue", lty = 2)
+lines(new_data$medv, coefidence_intervals[, "upr"], col = "blue", lty = 2) 
+legend("topright",
+       legend = c("Datos", "Recta de Regresión", "Banda de Confianza 90%"),
+       col = c("darkgreen", "red", "blue"),
+       pch = c(19, NA, NA),
+       lty = c(NA, 1, 2),
+       lwd = c(NA, 2, 1.5),
+       bty = "n")
+```
+Se observa que regresión no es del todo buena para explicar el conjunto de datos. Veamos a continuación los residuos
+
+## Punto 4
+
+```{r}
+plot(lm2)
+```
+Se observa cómo los residuos presentan heterocedasticidad demostrando que el modelo no es capaz de captar toda la información que hay en el conjunto de datos. En cuanto al QQ-residuals también se observa que no sigue el comportamiento deseado.
+
+## Punto 5
+
+Como se ha visto no es adecuado utilizar una regresión lineal, se va a probar a describirlo mediante un polinomio de grado dos para la variable medv. para solucionar el problema de heterocedasticidad en los residuos se va a estudiar el logaritmo de crim. También se ha decidido eliminar una serie de valores outliers para mejorar el valor de $R^2$ como se muestra en el siguiente chunck:
+
+```{r}
+df <- read_excel("boston.xlsx")
+df<-df[-c(127,128,34,50),]
+lm2<-lm(log(crim)~(medv)+I((medv)**2),data=df)
+summary(lm2)
+```
+Con este nuevo ajuste se observa que tanto medv como I((medv)^2) tienen significancia estadística con un p value muy bajo. El valor de F-statistic sigue siendo bajo. También se observa que el valor de $R^2$ a aumentando hasta 0.5285, es decir, este nuevo modelo explica un un $25.5\%$ más de varianza que el modelo anterior, lo cual es una mejora significativa.
+
+
+
+```{r}
+plot(lm2)
+```
+
+Se observa ahora que los residuos presentan un mejor comportamiento que para el modelo anterior, siendo más homocedásticos y con la media con valores en torno al 0. Aunque todavía se observa mucha acumulación de puntos para valores bajos, se ha conseguido mejorar el modelo. En cuanto al QQ-residuals ahora sigue un comportamiento más parecido al deseado.
+
+## Apartado 6
+
+
+```{r}
+medv_prediccion <- data.frame(medv = c(10, 30, 100))
+IC_log_crim<-predict(lm2,newdata=medv_prediccion,interval = "confidence",level=0.90)
+IP_log_crim<-predict(lm2,newdata=medv_prediccion,interval = "prediction",level=0.90)
+
+IC_crim <- exp(IC_log_crim)
+IP_crim <- exp(IP_log_crim)
+print("Intervalo de confianza:")
+print(IC_crim)
+print("Intervalos de predicción:")
+print(IP_crim)
+
+```
+Se observa que para 10k y 30k dolares el precio es lo esperado debido a que estos valores se encuentran dentro del rango del conjunto de datos, siendo más sencillo calcularlo. Sin embargo, para el caso de 100k el valor se dispara debido a que se está extrapolando y sale del orden de $10^{13}$ con intervalos tan grandes debido al uso del modelo cuadrático y la transformación logarítmica. Por lo tanto, al tener buscar estudiar un valor tan lejos del rango de datos con el que se entrena el modelo provoca que el error aumente siendo un resultado poco significativo y con mucho error, como se observa en los intervalos de predicción y de confianza.
+
+
 # Apartado por si acaso
 
 
 ```{r}
-# lm1<-lm(crim~.-black-nox-age,data=df)
-# summary(lm1)
+# lm<-lm(crim~.-black-nox-age,data=df)
+# summary(lm)
 ```
 
 Las variables que son estadísticamente significativas para explicar la variable crim son lstat, rm, ptratio, chas indus, medv y dis. Ordenados de más importantes a menos. El resto de variables quedan fuera por tener un p value superior a 0.05, afirmando la hipótesis nula de que el valor de $\beta$ asociado a esa variable vale 0.
