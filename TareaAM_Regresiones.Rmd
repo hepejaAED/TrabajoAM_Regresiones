@@ -289,6 +289,38 @@ Por lo tanto, ¿tienen todos sentido? No, los coeficientes de rm y age son contr
 
 ## Apartado 2
 
+El método de stepwise selecciona el modelo óptimo de manera autmática dado un conjunto de variables predictoras.
+
+```{r}
+df <- read_excel("boston.xlsx")
+lm3<-lm(log(crim)~.,data=df)
+lm3_stepwise<-step(lm3)
+summary(lm3_stepwise)
+```
+
+El modelo obtenido con stepwise tiene un $R^2$ ligeramente mejor y un AIC más bajo. SIn embargo, el modelo RegSubsets considero que es mejor porque simplifica más la complejidad. Si la diferencia de $R^2$ es mínima, se prefiere el modelo más simple, en este caso RegSubsets.
+
+
+El modelo de stepwise explica un $83,93\%$ de la varianza. 
+
+En cuanto el efecto de la variables chas sobre crim, se observa que el coeficiente de chas es negativo y estadísticamente significativo.
+
+## Apartado 3
+
+En el apartado anterior se ha podido observar cómo hay variables que no son estadísticamente significativas. En este apartado se va a realizar el diagnóstico de ese modelo sin emprender ninguna acción de eliminar esas variables.
+
+El problema principal de este modelo es que se incluyen variables no significativas según los resultados vistos con la función `summary()`. Esto sugiere que el modelo ha tenido en cuenta las variables significativas y las que no lo son (age, medv) no es estadísticamente relevante. Estova en contra del principio de parsimonia.
+
+```{r}
+plot(lm3_stepwise)
+```
+
+La gráfica de Residuals vs Fitted, la línea roja de la media de los residuos está prácticamente plana en torno a cero. Se ha mejorado la homocedasticidad de los residuos. 
+En cuanto al QQ-residuals se observa que presenta una tendencia esperada, aunque se observa una ligera desviación del supuesto de normalidad de los residuos, sobretodo para valores extremos.
+
+Por último, en la figura de Residuals vs Leverage se identifican valores outiliers con altos residuos que pueden estar afectando la robustez del modelo.
+
+## Apartado 4
 
 
 
