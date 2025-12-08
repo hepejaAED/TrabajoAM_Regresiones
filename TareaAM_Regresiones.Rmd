@@ -216,14 +216,75 @@ print(IP_crim)
 Se observa que para 10k y 30k dolares el precio es lo esperado debido a que estos valores se encuentran dentro del rango del conjunto de datos, siendo más sencillo calcularlo. Sin embargo, para el caso de 100k el valor se dispara debido a que se está extrapolando y sale del orden de $10^{13}$ con intervalos tan grandes debido al uso del modelo cuadrático y la transformación logarítmica. Por lo tanto, al tener buscar estudiar un valor tan lejos del rango de datos con el que se entrena el modelo provoca que el error aumente siendo un resultado poco significativo y con mucho error, como se observa en los intervalos de predicción y de confianza.
 
 
-# Apartado por si acaso
+# Ejercicio 3
 
+## Apartado 1
+
+La metodología RegSubsets consiste en ajustar todos los posibles modelos de regresión lineal que se pueden contruir con k variables predictoras donde k va de 1 hasta el número de variables. Para cada número de variables se selecciona el mejor modelo utilizando como criterio $R^2$, BIC y CP.
+
+Para el análisis se va a utilizar log(crim), ya que produce el modelo más robusto.
 
 ```{r}
-# lm<-lm(crim~.-black-nox-age,data=df)
-# summary(lm)
+library(leaps)
+library(readxl)
+df <- read_excel("boston.xlsx")
+regfit<-regsubsets(log(crim)~.,data=df)
+res.summary <- summary(regfit)
+res.summary
 ```
 
-Las variables que son estadísticamente significativas para explicar la variable crim son lstat, rm, ptratio, chas indus, medv y dis. Ordenados de más importantes a menos. El resto de variables quedan fuera por tener un p value superior a 0.05, afirmando la hipótesis nula de que el valor de $\beta$ asociado a esa variable vale 0.
+Para 8 variables se han seleccionado todas menos nox y black.
 
-Con estos resultados se obtiene un coeficiente de correlación de 0.5987
+```{r}
+
+
+par(mfrow = c(1, 3))
+
+# Gráfico R^2 ajustado
+plot(res.summary$adjr2, xlab = "Número de Variables", ylab = "R^2 Ajustado", type = "l")
+points(which.max(res.summary$adjr2), res.summary$adjr2[which.max(res.summary$adjr2)], col = "red", cex = 2, pch = 20)
+
+# Gráfico Cp de Mallows
+plot(res.summary$cp, xlab = "Número de Variables", ylab = "Cp de Mallows", type = "l")
+
+
+# Gráfico BIC
+plot(res.summary$bic, xlab = "Número de Variables", ylab = "BIC", type = "l")
+points(which.min(res.summary$bic), res.summary$bic[which.min(res.summary$bic)], col = "red", cex = 2, pch = 20)
+
+par(mfrow = c(1, 1))
+```
+
+Las gráficas de RegSubsets para log(crim) muestran que el $R^2$ se maximiza con 8 variables, pero elcriterio BIC y Cp alcanzan su punto óptimo con 7 variables. 
+
+Por lo tanto, se va a hacer el modelo de 7 variables.
+
+```{r}
+modelo_final <- lm(log(crim) ~.-black-medv-dis, data = df)
+summary(modelo_final)
+```
+
+Todos los p-value de las variables son menores a 0.05 por lo que se rechaza la hipótesis nula de que $\beta_i=0$ con $i$ asociado a la variable, esto confirma que todas las variables seleccionadas son estadísticamente significativas. En cuanto al coeficiente $R^2$ nos indica que este modelo es capaz de capturar el 83,57% de la varianza de los datos, además de que el p value de F-statistic es también despreciable. 
+
+Las variables con coeficientes positivos (aumenta la criminalidad) son: 
+
+- nox: Un aumento de la contaminación está asociado a un aumento de la tasa de criminalidad
+
+- rm: No se espera que cuanto mayor sea el tamaño de las viviendas haya más criminalidad. Este resultado puede deberse a un efecto de colinealidad, en el que el modelo ya ha asignado los efectos negativos de la riqueza a otras variables.
+
+- ptratio: A más alumnos por profesor la criminalidad aumenta.
+
+- indus: A mayor industria más criminalización.
+
+- age: Viviendas antiguas conlleva más criminalidad.
+
+- lstat: A mayor porcentaje de población de clase baja la criminalidad aumenta.
+
+Y el que tiene coeficiente negativo es chas.
+
+Por lo tanto, ¿tienen todos sentido? No, los coeficientes de rm y age son contraintuitivos ya que deberían de ser negativos y son positivos. Estos signos que parecen erróneos ocurren porque en la regresión lineal múltiple el coeficiente de cada predictor aisla su efecto sobre los demás. Es posible que estas variables estén afectadas por la colinealidad de los otros predictores con más peso.
+
+
+
+
+
