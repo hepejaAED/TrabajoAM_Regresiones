@@ -322,5 +322,46 @@ Por último, en la figura de Residuals vs Leverage se identifican valores outili
 
 ## Apartado 4
 
+Uno de los principales problemas que se tiene con stepwise es que utiliza age y medv. El problema de la heterocedasticidad en los residuos ya estaba resuelto por haber usado el log(crim), si no se hubiera puesto desde un principio hubiera sido otra mejora a considerar
+
+```{r}
+df <- read_excel("boston.xlsx")
+
+lm3<-lm(log(crim)~.-age-medv,data=df)
+lm3_stepwise<-step(lm3)
+
+summary(lm3_stepwise)
+```
+
+Se observa que ahora el valor de AIC sale ligeramente más alto que antes tras haber eliminado estos valores, y también el coeficiente de $R^2$, sin embargo, ahora todas las variables son estadísticamente significativas. Tras eliminar estas variables se obtiene un modelo más simple y con coeficientes más robustos.
+
+```{r}
+plot(lm3_stepwise)
+```
+Tras el reajuste, los problemas de no linealidad y heterocedasticidad están resueltos (gracias a que se utiliza log(crim)) y eliminar las variables más débiles ha ayudado a que el modelo sea más preciso para interpretar.
 
 
+## Apartado 5
+
+```{r}
+medv_indus <- median(df$indus)
+medv_nox <- median(df$nox)
+medv_rm <- median(df$rm)
+medv_ptratio <- median(df$ptratio)
+medv_lstat <- median(df$lstat)
+medv_dis<-median(df$dis)
+
+new_data_median <- data.frame(indus = medv_indus,chas = 0,nox = medv_nox,rm = medv_rm,dis=medv_dis,ptratio =medv_ptratio,lstat = medv_lstat)
+
+IP_log_crim <- predict(lm3_stepwise, 
+                       newdata = new_data_median, 
+                       interval = "prediction", 
+                       level = 0.95)
+IP_crim <- exp(IP_log_crim)
+
+print(IP_crim)
+print(median(df$crim))
+```
+Para la variable categórica chas se ha decidido utilizar 0 por conveniencia.
+
+El resultado obtenido es lógico, dentro del intervalo de confianza se encuentra el valor de la mediana por lo que se puede concluir que el modelo es robusto capaz de explicar aproximadamente un $84\%$ de la varianza de los datos que permite predecir la tasa de criminalidad esperada para un determinado barrio.
