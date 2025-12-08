@@ -2,7 +2,9 @@
 title: "Modelos de regresión lineal simple y múltiple"
 author: "Javier Herrero Pérez"
 date: "2025-12-05"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -284,6 +286,8 @@ Y el que tiene coeficiente negativo es chas.
 
 Por lo tanto, ¿tienen todos sentido? No, los coeficientes de rm y age son contraintuitivos ya que deberían de ser negativos y son positivos. Estos signos que parecen erróneos ocurren porque en la regresión lineal múltiple el coeficiente de cada predictor aisla su efecto sobre los demás. Es posible que estas variables estén afectadas por la colinealidad de los otros predictores con más peso.
 
+
+## Apartado 2
 
 
 
