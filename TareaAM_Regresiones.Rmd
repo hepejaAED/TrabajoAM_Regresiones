@@ -36,7 +36,7 @@ plot(df$lstat, df$crim,
      ylab = "crim",
      pch = 19, col = "blue")
 ```
-
+la relación es positiva y moderada. Gráficamente, se observa una tendencia creciente, aunque con mucha dispersión, especialmente para valores altos de crim.
 
 ## Apartado 2
 
@@ -78,7 +78,7 @@ legend("topright",
        lwd = c(NA, 2, 1.5),
        bty = "n")
 ```
-Se observa que la banda de confianza excluye a una gran cantidad de valores. Capta la tendencia pero no es correcta la escala
+Se observa que la banda de confianza que estima el rango para la media de crim dado un valor de lstat, es relativamente estrecha. Sin embargo, una gran cantidad de valores individuales están excluidos de esta banda. Esto es una consecuencia directa de una varianza residual alta.
 
 ## Apartado 4
 
