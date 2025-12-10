@@ -1,5 +1,5 @@
 ---
-title: "Modelos de regresión lineal simple y múltiple"
+title: "Tarea: Modelos de regresión lineal simple y múltiple"
 author: "Javier Herrero Pérez"
 date: "2025-12-05"
 output:
@@ -20,14 +20,14 @@ df <- read_excel("boston.xlsx")
 
 ## Apartado 1
 
-Se busca estudiar crim de manera lineal con la variable que tenga mayor relación lineal, para ello se va a estudiar la matriz de correlación eliminando la variable crim:
+Se busca estudiar crim de manera lineal con la variable que tenga mayor relación con esta, para ello se va a estudiar la matriz de correlación eliminando la variable crim:
 
 
 ```{r}
 cor_matrix <- cor(df$crim,df[,-which(names(df)=="crim")])
 cor_matrix
 ```
-Se observa que la variable que tiene una mayor relación lineal en lstat por lo que se entrena el modelo con esta variable
+Se observa que la variable que tiene una mayor relación lineal es lstat, por lo que se entrena el modelo con esta variable:
 
 ```{r}
 plot(df$lstat, df$crim,
@@ -78,7 +78,7 @@ legend("topright",
        lwd = c(NA, 2, 1.5),
        bty = "n")
 ```
-
+Se observa que la banda de confianza excluye a una gran cantidad de valores. Capta la tendencia pero no es correcta la escala
 
 ## Apartado 4
 
