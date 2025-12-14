@@ -1,6 +1,6 @@
 ---
 title: "Tarea: Modelos de regresión lineal simple y múltiple"
-author: "Javier Herrero Pérez"
+author: "Javier Herrero Pérez, Jose Aguilar Milla"
 date: "2025-12-05"
 output:
   pdf_document: default
