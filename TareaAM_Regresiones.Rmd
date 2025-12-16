@@ -146,7 +146,7 @@ lm2<-lm(crim~medv,data=df)
 summary(lm2)
 ```
 
-La variable medv es estadísticamente significativa para explicar la variable crim. Por otro lado el p-value de F-statistic es muy bajo por lo que se rechaza la hipótesis nula demostrando que el modelo es globalmente significativo. Este modelo es capaz de captar el $27,36\%$ de la varianza de los datos, aunque es un valor bajo más adelante se desarrollaran transformaciones que subiran este valor. La recta mínima de los cuadrados viene dada por $y=-0.255\beta_1 + 8.518$ por lo que a mayor sea el precio medio de la vivienda menor será la tasa de criminalidad.
+La variable medv es estadísticamente significativa para explicar la variable crim. Por otro lado el p-value de F-statistic es muy bajo por lo que se rechaza la hipótesis nula demostrando que el modelo es globalmente significativo. Este modelo es capaz de captar el $27,36\%$ de la varianza de los datos, aunque es un valor bajo más adelante se desarrollaran transformaciones que subiran este valor. La recta mínima de los cuadrados viene dada por $y=-0.255x + 8.518$ por lo que a mayor sea el precio medio de la vivienda menor será la tasa de criminalidad.
 
 ## Punto 3
 
