@@ -152,7 +152,7 @@ La variable medv es estadísticamente significativa para explicar la variable cr
 
 ```{r}
 new_data<-data.frame(medv=seq(min(df$medv),max(df$medv),length.out=100))
-coefidence_intervals<-predict(lm2,newdata=new_data,interval = "confidence",level=0.9)
+coefidence_intervals<-predict(lm2,newdata=new_data,interval = "prediction",level=0.9)
 
 plot(df$medv,df$crim,
      main = "Diagrama de Dispersión: crim vs. medv",
