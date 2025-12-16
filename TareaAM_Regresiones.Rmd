@@ -257,9 +257,10 @@ points(which.min(res.summary$bic), res.summary$bic[which.min(res.summary$bic)], 
 par(mfrow = c(1, 1))
 ```
 
-Las gráficas de RegSubsets para log(crim) muestran que el $R^2$ se maximiza con 8 variables, pero elcriterio BIC y Cp alcanzan su punto óptimo con 7 variables. 
+El objetivo es encontrar el modelo que logre el mejor equilibrio entre buena capacidad predictiva y simplicidad. Para ello el objetivo es ver qué modelo simple maximiza $R^2$ minimizando $C_p$ y BIC. El mínimo de $C_p$ nos lleva a que el modelo tiene la menor suma de errores debidos a la varianza y al sesgo. Por otro lado un BIC bajo indica que el modelo alcanza una buena verosimilitud con pocos parámetros (principio de parsimonia).
 
-Por lo tanto, se va a hacer el modelo de 7 variables.
+Las gráficas de RegSubsets para log(crim) muestran que el $R^2$ se maximiza con 8 variables. Sin embargo, el mínimo de $C_p$ y BIC se encuentran para 7 variables, es por eso que se decide optar por un modelo de 7 variables.
+
 
 ```{r}
 modelo_final <- lm(log(crim) ~.-black-medv-dis, data = df)
